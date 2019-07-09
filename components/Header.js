@@ -2,7 +2,8 @@ import Link from 'next/link'
 import Head from 'next/head'
 import Router from 'next/router'
 import NProgress from 'nprogress'
-import { Menu, Container, Image, Icon } from 'semantic-ui-react'
+import { Menu, Container, Image, Icon, Input } from 'semantic-ui-react'
+import Findify from './Findify';
 
 Router.onRouteChangeStart = url => NProgress.start()
 Router.onRouteChangeComplete = () => NProgress.done()
@@ -14,7 +15,7 @@ export default ({ token }) => (
       <link rel="stylesheet" type="text/css" href="/static/nprogress.css" />
     </Head>
     <Menu inverted fixed="top" size="huge">
-      <Container text>
+      <Container fluid>
         <Link href="/" prefetch passHref>
           <Menu.Item as="a" header>
             <Image
@@ -41,6 +42,11 @@ export default ({ token }) => (
             </Link>
           ]
         )}
+        <Menu.Item position="right">
+          <Findify type='autocomplete' getRef={input => input.inputRef}>
+            <Input icon='search' placeholder='Search...' />
+          </Findify>
+        </Menu.Item>
 
         <Link href="/cart" passHref>
           <Menu.Item position="right" name="cart">

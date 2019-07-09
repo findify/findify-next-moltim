@@ -1,11 +1,11 @@
 import Layout from '../components/Layout'
 import ProductList from '../components/ProductList'
-
+import Findify from "../components/Findify";
 import { getProducts } from '../lib/moltin'
 
 const Home = ({ products }) => (
   <Layout title="Home">
-    <ProductList products={products} />
+    <Findify type='search' placeholder={<ProductList products={products} />} />
   </Layout>
 )
 

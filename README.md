@@ -1,22 +1,22 @@
-# Next.js demo store
+# Findify + Next.js + Moltim demo store
 
-> 🛍 Next.js demo store built with moltin
-
-Next.js webshop built using [Stripe checkout](https://stripe.com/checkout) and [moltin](https://moltin.com).
-
-Check out the [demo](https://moltin-nextjs-demo-store.now.sh) here.
+Simple preview of how to use default Findify setup in React SPA based stores
 
 ## 🛠 Setup
 
-Both a moltin and Stripe account are needed for this store to run successfully.
+> `yarn & yarn dev` or `npm i & npm run dev`
 
-Create a `.env` file at the project root with your moltin `client_id` and Stripe test `publishable key`.
+## 👀 Points of interest
 
-```dosini
-MOLTIN_CLIENT_ID=
-STRIPE_PUBLISHABLE_KEY=
-```
+- `./components/Layout.js:38`
+> Add the link to Findify script in your Header with `async/defer` props
 
-`npm install`
+- `./components/Findify.js`
+> The findify component which waits for script load and renders widgets. Check the file, props are described there.
 
-`npm run dev`
+- `./components/Header.js`
+> Wrap input in Findify component and write Ref access function
+
+- [`./pages/product.js`](http://localhost:3000/product?id=19f14ec4-959f-495d-9fa8-bca93bfd15f0)
+> The recommendations for product 
+> Send "view-page" event to Findify Analytics
