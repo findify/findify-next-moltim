@@ -52,7 +52,7 @@ class ProductPage extends React.Component {
         />
         <Findify
           type='recommendation'
-          options={{ slot: 'product-findify-rec-4', item_id: '15855' }}
+          options={{ slot: 'product-findify-rec-4', item_ids: ['15855'] }}
           config={{ template: 'swiper' }}
         />
         <Findify

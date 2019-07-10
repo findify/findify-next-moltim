@@ -18,7 +18,7 @@ export default class Findify extends Component{
 
   static propTypes = {
     widgetKey: PropTypes.string,
-    type: PropTypes.oneOf(['search', 'recommendation', 'autocomplete']),
+    type: PropTypes.oneOf(['search', 'recommendation', 'autocomplete', 'smart-collection']),
     options: PropTypes.object,
     config: PropTypes.object
   }
@@ -41,11 +41,27 @@ export default class Findify extends Component{
 
   renderFindify = async (container) => {
     const { widgetKey, type, options = {}, config, ref } = this.props;
-    this.findifyKey = widgetKey || randomKey();
     const findify = await waitForFindify();
-    findify.widgets.attach(container, type, { ...options, ...config, widgetKey: this.findifyKey });
+
+    this.findifyKey = widgetKey || randomKey();
+
+    findify.widgets.attach(container, type, {
+      ...options,
+      ...config,
+      widgetKey: this.findifyKey,
+      disableAutoRequest: true
+    });
+  
     this.widget = findify.widgets.get(this.findifyKey);
-    this.widget.agent.defaults(options).on('change:items', this.handleFirstResponse)
+
+    this.widget.agent
+      .defaults(options)
+      .on('change:items', this.handleFirstResponse);
+
+    if (['search', 'smart-collection'].includes(type)) {
+      this.widget.agent.applyState(findify.utils.getQuery())
+    }
+
     if (ref) ref(this);
   }
 
