@@ -43,7 +43,7 @@ export default ({ token }) => (
           ]
         )}
         <Menu.Item position="right">
-          <Findify type='autocomplete' getRef={input => input.inputRef}>
+          <Findify type='autocomplete' getRef={input => input.inputRef.current}>
             <Input icon='search' placeholder='Search...' />
           </Findify>
         </Menu.Item>

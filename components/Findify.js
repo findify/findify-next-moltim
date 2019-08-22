@@ -1,82 +1,62 @@
-import React, { Component } from 'react';
-import { PropTypes } from 'prop-types';
+import React, { useState, useRef, useEffect } from 'react';
 
 const randomKey = () => Math.random().toString(36).substring(7);
 
 export const waitForFindify = () => new Promise(resolve => {
   (window.findifyCallbacks = window.findifyCallbacks || []).push((findify) => resolve(findify));
-})
+});
 
-export default class Findify extends Component{
-  container = undefined;
-  findifyKey = undefined;
-  widget = undefined;
+const setupFindify = (container, { widgetKey = randomKey(), getRef, options = {}, config = {}, type }) => {
+  const [isFindifyReady, setReadyState] = useState(false);
 
-  state = {
-    isLoaded: false,
-  }
+  useEffect(() => {
+    if (!container.current) return;
+    let findify = void 0;
+    let shouldRender = true;
 
-  static propTypes = {
-    widgetKey: PropTypes.string,
-    type: PropTypes.oneOf(['search', 'recommendation', 'autocomplete', 'smart-collection']),
-    options: PropTypes.object,
-    config: PropTypes.object
-  }
+    (async () => {
+      if (!shouldRender) return;
+      findify = await waitForFindify();
+      findify.widgets.attach(
+        getRef ? getRef(container.current) : container.current, type,
+        { ...options, ...config, widgetKey, disableAutoRequest: true }
+      );
 
-  componentWillUnmount() {
-    if (this.findifyKey) window.findify.widgets.detach(this.findifyKey);
-  }
-
-  handleFirstResponse = (items) => {
-    this.setState({ isLoaded: true });
-    this.widget.agent.off(this.handleFirstResponse)
-  }
-
-  register = (container) => {
-    if (this.container || !container) return;
-    const { getRef } = this.props;
-    this.container = getRef && getRef(container) || container;
-    this.renderFindify(this.container);
-  }
-
-  renderFindify = async (container) => {
-    const { widgetKey, type, options = {}, config, ref } = this.props;
-    const findify = await waitForFindify();
-
-    this.findifyKey = widgetKey || randomKey();
-
-    findify.widgets.attach(container, type, {
-      ...options,
-      ...config,
-      widgetKey: this.findifyKey,
-      disableAutoRequest: true
-    });
+      const widget = findify.widgets.get(widgetKey);
   
-    this.widget = findify.widgets.get(this.findifyKey);
+      const handleFirstResponse = () => {
+        setReadyState(true);
+        widget.agent.off(handleFirstResponse)
+      }
+  
+      widget.agent.defaults(options).on('change:items', handleFirstResponse);
 
-    this.widget.agent
-      .defaults(options)
-      .on('change:items', this.handleFirstResponse);
+      if (['search', 'smart-collection'].includes(type)) {
+        widget.agent.applyState(findify.utils.getQuery())
+      }
+    })();
 
-    if (['search', 'smart-collection'].includes(type)) {
-      this.widget.agent.applyState(findify.utils.getQuery())
-    }
+    return () => {
+      if (!findify) return shouldRender = false;
+      findify.widgets.detach(widgetKey)
+    };
+  }, [options, config, container])
 
-    if (ref) ref(this);
-  }
+  return isFindifyReady;
+}
 
-  render() {
-    const { isLoaded } = this.state;
-    const { children, placeholder } = this.props;
-    return (
-      <React.Fragment>
-        { !isLoaded && placeholder }
-        {
-          children
-            && React.cloneElement(children, { ref: this.register })
-            || <div ref={this.register} />
-        }
-      </React.Fragment>
-    )
-  }
+export default ({ children, placeholder, ...rest }) => {
+  const container = useRef(null);
+  const isFindifyReady = setupFindify(container, rest);
+  
+  return (
+    <React.Fragment>
+      { !isFindifyReady && placeholder }
+      {
+        children
+          && React.cloneElement(children, { ref: container })
+          || <div ref={container} />
+      }
+    </React.Fragment>
+  )
 }
