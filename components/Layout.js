@@ -37,7 +37,12 @@ export default class Layout extends React.Component {
           <script
             async
             type="text/javascript"
-            src="//findify-assets-2bveeb6u8ag.netdna-ssl.com/search/prod/bitaru-test-store.myshopify.com.min.js?shop=bitaru-test-store.myshopify.com"
+            src="//findify-assets-2bveeb6u8ag.netdna-ssl.com/search/prod/horsemeup.se.min.js?shop=horsemeup.se.min.js"
+          />
+          <script
+            async
+            type="text/javascript"
+            src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.js"
           />
           <link
             rel="stylesheet"
