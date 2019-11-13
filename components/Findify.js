@@ -46,8 +46,8 @@ const setupFindify = ({ widgetKey = randomKey(), options = {}, config = {} }, ty
         setReadyState(true)
         widget.agent.off(handleFirstResponse)
       }
-
-      widget.agent.defaults(options).on(eventBindings[type], handleFirstResponse)
+      const meta = widget.config.get('meta') && widget.config.get('meta').toJS() || {};
+      widget.agent.defaults({ ...meta, ...options }).on(eventBindings[type], handleFirstResponse)
 
       if (['search', 'smart-collection'].includes(type)) {
         widget.agent.applyState(findify.utils.getQuery())
